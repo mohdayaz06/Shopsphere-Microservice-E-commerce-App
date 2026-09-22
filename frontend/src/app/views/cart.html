@@ -1,0 +1,55 @@
+<div class="container-app" style="padding-top:28px; padding-bottom:48px;">
+  <div class="section-header" style="padding:0; max-width:none;">
+    <div>
+      <span class="eyebrow">Your bag</span>
+      <h2>Shopping Cart</h2>
+    </div>
+  </div>
+
+  <div class="alert alert-danger" ng-if="vm.errorMessage">{{ vm.errorMessage }}</div>
+
+  <div ng-if="vm.isLoading" class="card card-pad">
+    <div class="skeleton" style="height:80px; margin-bottom:12px;"></div>
+    <div class="skeleton" style="height:80px;"></div>
+  </div>
+
+  <div class="empty-state" ng-if="!vm.isLoading && vm.cart.items.length === 0">
+    <i class="bi bi-bag"></i>
+    Your cart is empty.
+    <div style="margin-top:16px;"><a href="#!/products" class="btn btn-accent">Start Shopping</a></div>
+  </div>
+
+  <div style="display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap;" ng-if="!vm.isLoading && vm.cart.items.length > 0">
+    <div class="card card-pad" style="flex:2; min-width:320px;">
+      <div class="cart-line" ng-repeat="item in vm.cart.items">
+        <div class="thumb"><img ng-src="{{ item.image_url }}" alt="{{ item.product_name }}" /></div>
+        <div style="flex:1; min-width:0;">
+          <div class="line-name">{{ item.product_name }}</div>
+          <div class="line-price">₹{{ item.unit_price | number:0 }} each</div>
+        </div>
+        <div class="qty-stepper" style="opacity: {{ vm.updatingProductId === item.product_id ? 0.5 : 1 }};">
+          <button ng-click="vm.decreaseQty(item)" ng-disabled="vm.updatingProductId === item.product_id">&minus;</button>
+          <span>{{ item.quantity }}</span>
+          <button ng-click="vm.increaseQty(item)" ng-disabled="vm.updatingProductId === item.product_id">+</button>
+        </div>
+        <div style="width:90px; text-align:right; font-weight:700;">₹{{ (item.unit_price * item.quantity) | number:0 }}</div>
+        <button class="remove-btn" ng-click="vm.removeItem(item)" ng-disabled="vm.updatingProductId === item.product_id">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+
+    <div style="flex:1; min-width:280px;">
+      <div class="summary-card">
+        <h3 style="font-size:0.95rem; margin-top:0;">Order Summary</h3>
+        <div class="summary-row"><span>Subtotal ({{ vm.cart.itemCount }} item<span ng-if="vm.cart.itemCount !== 1">s</span>)</span><span>₹{{ vm.cart.subtotal | number:0 }}</span></div>
+        <div class="summary-row"><span class="text-muted" style="color:var(--c-ink-muted);">Tax and shipping calculated at checkout</span></div>
+        <div class="summary-row total"><span>Estimated Total</span><span>₹{{ vm.cart.subtotal | number:0 }}</span></div>
+        <a href="#!/checkout" class="btn btn-accent btn-block" style="margin-top:14px;">
+          Proceed to Checkout <i class="bi bi-arrow-right"></i>
+        </a>
+        <a href="#!/products" class="btn btn-outline btn-block" style="margin-top:10px;">Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+</div>

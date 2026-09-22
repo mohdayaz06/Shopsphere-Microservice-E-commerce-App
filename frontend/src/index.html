@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="shopSphereApp">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopSphere | Shop smarter. Live better.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="vendor/bootstrap.min.css" />
+  <link rel="stylesheet" href="vendor/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body ng-controller="ShellController as shell">
+
+  <!-- ==================== Toast notifications ==================== -->
+  <div style="position:fixed; top:16px; right:16px; z-index:200; display:flex; flex-direction:column; gap:10px; max-width:340px;" aria-live="polite">
+    <div ng-repeat="toast in shell.toasts track by toast.id"
+      style="display:flex; align-items:flex-start; gap:10px; background:#fff; border:1px solid var(--c-border); border-left:3px solid var(--c-accent); border-radius:8px; padding:12px 14px; font-size:0.85rem; box-shadow:0 6px 20px rgba(22,23,26,0.14);"
+      ng-class="{'toast-danger': toast.type === 'danger'}">
+      <i class="bi bi-check-circle-fill" style="color:var(--c-success);" ng-if="toast.type === 'success'"></i>
+      <i class="bi bi-exclamation-triangle-fill" style="color:var(--c-danger);" ng-if="toast.type === 'danger'"></i>
+      <i class="bi bi-info-circle-fill" style="color:var(--c-ink-muted);" ng-if="toast.type === 'info'"></i>
+      <span style="flex:1;">{{ toast.message }}</span>
+      <button ng-click="shell.dismissToast(toast.id)" style="background:none; border:none; color:var(--c-ink-muted); cursor:pointer;">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== Utility bar ==================== -->
+  <div class="utility-bar">
+    <strong>Free shipping</strong> on orders over ₹999 &middot; Simulated checkout - no real payment is processed
+  </div>
+
+  <!-- ==================== Main navbar ==================== -->
+  <header class="navbar-main">
+    <div class="navbar-inner">
+      <a href="#!/" class="brand-logo">
+        <div class="mark">S</div>
+        <span class="brand-mark">ShopSphere</span>
+      </a>
+
+      <form class="nav-search" ng-submit="shell.submitSearch()">
+        <input type="text" ng-model="shell.searchTerm" placeholder="Search for products, brands and more..." />
+        <button type="submit" aria-label="Search"><i class="bi bi-search"></i></button>
+      </form>
+
+      <div class="navbar-actions">
+        <a href="#!/orders" class="nav-icon-btn" ng-if="shell.currentUser">
+          <i class="bi bi-box-seam"></i> <span>Orders</span>
+        </a>
+        <a href="#!/cart" class="nav-icon-btn" ng-if="shell.currentUser">
+          <i class="bi bi-bag"></i>
+          <span class="cart-badge" ng-if="shell.cartCount > 0">{{ shell.cartCount }}</span>
+        </a>
+        <a href="#!/profile" class="nav-icon-btn" ng-if="shell.currentUser">
+          <i class="bi bi-person-circle"></i> <span>{{ shell.currentUser.fullName.split(' ')[0] }}</span>
+        </a>
+        <button class="nav-icon-btn" ng-if="shell.currentUser" ng-click="shell.logout()">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+        <a href="#!/login" class="btn btn-outline btn-sm" ng-if="!shell.currentUser">Sign in</a>
+        <a href="#!/register" class="btn btn-dark btn-sm" ng-if="!shell.currentUser">Sign up</a>
+      </div>
+    </div>
+
+    <nav class="category-strip" ng-if="shell.categories.length > 0">
+      <a href="#!/products" class="category-pill" ng-class="{active: shell.isActive('/products')}">All Products</a>
+      <a href="#!/products?category={{ cat.slug }}" class="category-pill" ng-repeat="cat in shell.categories">{{ cat.name }}</a>
+    </nav>
+  </header>
+
+  <!-- ==================== Routed page content ==================== -->
+  <main>
+    <div ng-view></div>
+  </main>
+
+  <!-- ==================== Footer ==================== -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <div class="brand-logo" style="margin-bottom:14px;">
+          <div class="mark">S</div>
+          <span class="brand-mark" style="color:#fff;">ShopSphere</span>
+        </div>
+        <p style="font-size:0.85rem; max-width:280px;">A modern shopping platform for electronics, fashion, home essentials, accessories, sports gear, and beauty products.</p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <a href="#!/products">All Products</a>
+        <a href="#!/products?featured=true">Featured</a>
+        <a href="#!/products?newArrival=true">New Arrivals</a>
+      </div>
+      <div>
+        <h4>Account</h4>
+        <a href="#!/orders">Order History</a>
+        <a href="#!/profile">Profile</a>
+        <a href="#!/cart">Cart</a>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <a href="#!/">About</a>
+        <a href="#!/">Contact</a>
+        <a href="#!/">Careers</a>
+      </div>
+    </div>
+    <div class="bottom-bar">
+      <span>&copy; 2026 ShopSphere. A demo application built for DevOps practice.</span>
+      <span>Payments are simulated - no real transactions occur.</span>
+    </div>
+  </footer>
+
+  <!-- ==================== Vendor JS ==================== -->
+  <script src="vendor/angular.min.js"></script>
+  <script src="vendor/angular-route.min.js"></script>
+  <script src="vendor/angular-resource.min.js"></script>
+  <script src="vendor/bootstrap.bundle.min.js"></script>
+
+  <!-- ==================== App JS ==================== -->
+  <script src="app/app.module.js"></script>
+  <script src="app/app.config.js"></script>
+  <script src="app/interceptors/auth.interceptor.js"></script>
+  <script src="app/filters/stars.filter.js"></script>
+  <script src="app/services/auth.service.js"></script>
+  <script src="app/services/product.service.js"></script>
+  <script src="app/services/cart.service.js"></script>
+  <script src="app/services/order.service.js"></script>
+  <script src="app/services/notification.service.js"></script>
+  <script src="app/controllers/shell.controller.js"></script>
+  <script src="app/controllers/home.controller.js"></script>
+  <script src="app/controllers/login.controller.js"></script>
+  <script src="app/controllers/register.controller.js"></script>
+  <script src="app/controllers/product-list.controller.js"></script>
+  <script src="app/controllers/product-detail.controller.js"></script>
+  <script src="app/controllers/cart.controller.js"></script>
+  <script src="app/controllers/checkout.controller.js"></script>
+  <script src="app/controllers/orders.controller.js"></script>
+  <script src="app/controllers/order-detail.controller.js"></script>
+  <script src="app/controllers/profile.controller.js"></script>
+</body>
+</html>

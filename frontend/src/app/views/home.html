@@ -1,0 +1,104 @@
+<section class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow">New Season Arrivals</span>
+    <h1>Discover Products You'll Love</h1>
+    <p>Shop smarter, live better. Curated electronics, fashion, home essentials, and more - all in one place.</p>
+    <a href="#!/products" class="btn btn-accent">Shop Now <i class="bi bi-arrow-right"></i></a>
+  </div>
+</section>
+
+<div class="section" ng-if="vm.categories.length > 0">
+  <div class="section-header">
+    <div>
+      <span class="eyebrow">Browse</span>
+      <h2>Featured Categories</h2>
+    </div>
+  </div>
+  <div class="d-flex" style="gap:14px; flex-wrap:wrap;">
+    <a href="#!/products?category={{ cat.slug }}" class="card" style="padding:18px 26px; flex:1; min-width:150px; text-align:center;" ng-repeat="cat in vm.categories">
+      <div style="font-weight:600; font-size:0.92rem;">{{ cat.name }}</div>
+    </a>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div>
+      <span class="eyebrow">Hand-picked</span>
+      <h2>Trending Products</h2>
+    </div>
+    <a href="#!/products?featured=true" class="btn btn-outline btn-sm">View all</a>
+  </div>
+
+  <div class="product-grid" ng-if="!vm.isLoading">
+    <div class="product-card" ng-repeat="product in vm.featured">
+      <a href="#!/products/{{ product.id }}" class="thumb-wrap">
+        <img ng-src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" />
+        <span class="product-badge sale" ng-if="product.discount_percent > 0">-{{ product.discount_percent }}%</span>
+      </a>
+      <div class="card-body">
+        <span class="cat-label">{{ product.category_name }}</span>
+        <a href="#!/products/{{ product.id }}" class="name">{{ product.name }}</a>
+        <div class="rating">
+          <span class="stars">
+            <i class="bi" ng-repeat="s in product.rating | starsArray" ng-class="{'bi-star-fill': s === 'full', 'bi-star-half': s === 'half', 'bi-star': s === 'empty'}"></i>
+          </span>
+          <span>({{ product.rating_count }})</span>
+        </div>
+        <div class="price-row">
+          <span class="final price">₹{{ product.final_price | number:0 }}</span>
+          <span class="original price" ng-if="product.discount_percent > 0">₹{{ product.price | number:0 }}</span>
+        </div>
+        <button class="add-cart-btn" ng-click="vm.addToCart(product, $event)" ng-disabled="product.stock_quantity === 0">
+          <i class="bi bi-bag-plus"></i> {{ product.stock_quantity === 0 ? 'Out of stock' : 'Add to Cart' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="product-grid" ng-if="vm.isLoading">
+    <div class="skeleton skeleton-card" ng-repeat="n in [1,2,3,4]"></div>
+  </div>
+</div>
+
+<div class="section" style="background:var(--c-surface); border-radius:var(--radius-lg); max-width:1280px;" ng-if="vm.newArrivals.length > 0">
+  <div class="section-header">
+    <div>
+      <span class="eyebrow">Just landed</span>
+      <h2>New Arrivals</h2>
+    </div>
+    <a href="#!/products?newArrival=true" class="btn btn-outline btn-sm">View all</a>
+  </div>
+
+  <div class="product-grid">
+    <div class="product-card" ng-repeat="product in vm.newArrivals">
+      <a href="#!/products/{{ product.id }}" class="thumb-wrap">
+        <img ng-src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" />
+        <span class="product-badge new">New</span>
+      </a>
+      <div class="card-body">
+        <span class="cat-label">{{ product.category_name }}</span>
+        <a href="#!/products/{{ product.id }}" class="name">{{ product.name }}</a>
+        <div class="rating">
+          <span class="stars">
+            <i class="bi" ng-repeat="s in product.rating | starsArray" ng-class="{'bi-star-fill': s === 'full', 'bi-star-half': s === 'half', 'bi-star': s === 'empty'}"></i>
+          </span>
+          <span>({{ product.rating_count }})</span>
+        </div>
+        <div class="price-row">
+          <span class="final price">₹{{ product.final_price | number:0 }}</span>
+          <span class="original price" ng-if="product.discount_percent > 0">₹{{ product.price | number:0 }}</span>
+        </div>
+        <button class="add-cart-btn" ng-click="vm.addToCart(product, $event)" ng-disabled="product.stock_quantity === 0">
+          <i class="bi bi-bag-plus"></i> {{ product.stock_quantity === 0 ? 'Out of stock' : 'Add to Cart' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="section" style="text-align:center; background:var(--c-accent-bg); border-radius:var(--radius-lg); padding:56px 24px;">
+  <h2 style="margin-bottom:10px;">Free shipping on orders over ₹999</h2>
+  <p class="text-muted" style="color:var(--c-ink-muted); margin-bottom:22px;">Plus easy 7-day returns on everything you buy.</p>
+  <a href="#!/products" class="btn btn-dark">Start Shopping</a>
+</section>

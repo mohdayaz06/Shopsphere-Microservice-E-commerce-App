@@ -1,0 +1,121 @@
+<div class="container-app" style="padding-top:28px; padding-bottom:48px; max-width:1100px;">
+  <div class="section-header" style="padding:0; max-width:none;">
+    <div>
+      <span class="eyebrow">Almost there</span>
+      <h2>Checkout</h2>
+    </div>
+  </div>
+
+  <!-- Success state -->
+  <div class="card card-pad" style="text-align:center; padding:56px 24px;" ng-if="vm.placedOrder">
+    <div style="width:64px; height:64px; border-radius:50%; background:var(--c-success-bg); color:var(--c-success); display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin:0 auto 18px;">
+      <i class="bi bi-check-lg"></i>
+    </div>
+    <h2>Order placed successfully!</h2>
+    <p class="text-muted" style="color:var(--c-ink-muted);">
+      Order #{{ vm.placedOrder.id }} &middot; Total ₹{{ vm.placedOrder.total | number:0 }}
+    </p>
+    <p class="text-muted" style="color:var(--c-ink-muted); font-size:0.85rem;" ng-if="vm.placedOrder.payment_status === 'SUCCESS'">
+      Payment received. We'll notify you when your order ships.
+    </p>
+    <p class="text-muted" style="color:var(--c-ink-muted); font-size:0.85rem;" ng-if="vm.placedOrder.payment_status === 'PENDING'">
+      Pay {{ vm.placedOrder.total | number:0 }} in cash when your order is delivered.
+    </p>
+    <div class="d-flex" style="gap:12px; justify-content:center; margin-top:22px;">
+      <a href="#!/orders/{{ vm.placedOrder.id }}" class="btn btn-accent">View Order</a>
+      <a href="#!/products" class="btn btn-outline">Continue Shopping</a>
+    </div>
+  </div>
+
+  <!-- Checkout form -->
+  <div ng-if="!vm.placedOrder">
+    <div class="alert alert-danger" ng-if="vm.errorMessage">{{ vm.errorMessage }}</div>
+
+    <div style="display:flex; gap:28px; flex-wrap:wrap;" ng-if="!vm.isLoading">
+      <div style="flex:2; min-width:340px;">
+        <div class="card card-pad" style="margin-bottom:20px;">
+          <h3 style="font-size:0.95rem; margin-top:0;">Shipping Address</h3>
+          <form name="addressForm" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Full name</label>
+                <input type="text" class="form-control" ng-model="vm.shippingAddress.fullName" name="fullName" required maxlength="120" />
+              </div>
+              <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" class="form-control" ng-model="vm.shippingAddress.phone" name="phone" required maxlength="20" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Address line 1</label>
+              <input type="text" class="form-control" ng-model="vm.shippingAddress.line1" name="line1" required maxlength="150" />
+            </div>
+            <div class="form-group">
+              <label>Address line 2 (optional)</label>
+              <input type="text" class="form-control" ng-model="vm.shippingAddress.line2" name="line2" maxlength="150" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>City</label>
+                <input type="text" class="form-control" ng-model="vm.shippingAddress.city" name="city" required maxlength="80" />
+              </div>
+              <div class="form-group">
+                <label>State</label>
+                <input type="text" class="form-control" ng-model="vm.shippingAddress.state" name="state" required maxlength="80" />
+              </div>
+              <div class="form-group">
+                <label>Postal code</label>
+                <input type="text" class="form-control" ng-model="vm.shippingAddress.postalCode" name="postalCode" required maxlength="20" />
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="card card-pad">
+          <h3 style="font-size:0.95rem; margin-top:0;">Payment Method</h3>
+
+          <div class="payment-option" ng-class="{selected: vm.paymentMethod === 'CARD'}" ng-click="vm.selectPaymentMethod('CARD')">
+            <input type="radio" ng-checked="vm.paymentMethod === 'CARD'" />
+            <i class="bi bi-credit-card"></i>
+            <div><strong>Credit / Debit Card</strong><div class="text-muted" style="font-size:0.78rem; color:var(--c-ink-muted);">Simulated - no real card is charged</div></div>
+          </div>
+          <div class="payment-option" ng-class="{selected: vm.paymentMethod === 'UPI'}" ng-click="vm.selectPaymentMethod('UPI')">
+            <input type="radio" ng-checked="vm.paymentMethod === 'UPI'" />
+            <i class="bi bi-phone"></i>
+            <div><strong>UPI</strong><div class="text-muted" style="font-size:0.78rem; color:var(--c-ink-muted);">Simulated instant payment</div></div>
+          </div>
+          <div class="payment-option" ng-class="{selected: vm.paymentMethod === 'NET_BANKING'}" ng-click="vm.selectPaymentMethod('NET_BANKING')">
+            <input type="radio" ng-checked="vm.paymentMethod === 'NET_BANKING'" />
+            <i class="bi bi-bank"></i>
+            <div><strong>Net Banking</strong><div class="text-muted" style="font-size:0.78rem; color:var(--c-ink-muted);">Simulated bank transfer</div></div>
+          </div>
+          <div class="payment-option" ng-class="{selected: vm.paymentMethod === 'COD'}" ng-click="vm.selectPaymentMethod('COD')">
+            <input type="radio" ng-checked="vm.paymentMethod === 'COD'" />
+            <i class="bi bi-cash-coin"></i>
+            <div><strong>Cash on Delivery</strong><div class="text-muted" style="font-size:0.78rem; color:var(--c-ink-muted);">Pay when your order arrives</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:1; min-width:280px;">
+        <div class="summary-card">
+          <h3 style="font-size:0.95rem; margin-top:0;">Order Summary</h3>
+          <div class="cart-line" style="padding:10px 0;" ng-repeat="item in vm.cart.items">
+            <div class="thumb" style="width:48px; height:48px;"><img ng-src="{{ item.image_url }}" alt="{{ item.product_name }}" /></div>
+            <div style="flex:1; min-width:0; font-size:0.82rem;">{{ item.product_name }} &times; {{ item.quantity }}</div>
+            <div style="font-size:0.85rem; font-weight:600;">₹{{ (item.unit_price * item.quantity) | number:0 }}</div>
+          </div>
+          <div class="summary-row"><span>Subtotal</span><span>₹{{ vm.cart.subtotal | number:0 }}</span></div>
+          <div class="summary-row"><span>Estimated Tax</span><span>₹{{ vm.estimatedTax | number:0 }}</span></div>
+          <div class="summary-row"><span>Shipping</span><span>{{ vm.estimatedShipping === 0 ? 'Free' : '₹' + vm.estimatedShipping }}</span></div>
+          <div class="summary-row total"><span>Total</span><span>₹{{ vm.estimatedTotal | number:0 }}</span></div>
+          <button class="btn btn-accent btn-block" style="margin-top:14px;" ng-click="vm.placeOrder(addressForm)" ng-disabled="vm.isPlacingOrder">
+            <span class="spinner" ng-if="vm.isPlacingOrder"></span>
+            <span ng-if="!vm.isPlacingOrder"><i class="bi bi-lock"></i> Place Order</span>
+            <span ng-if="vm.isPlacingOrder">Processing payment...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

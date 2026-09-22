@@ -1,0 +1,42 @@
+<div class="auth-shell">
+  <div class="auth-card">
+    <h2>Welcome back</h2>
+    <p class="sub">Sign in to continue shopping.</p>
+
+    <div class="alert alert-danger" ng-if="vm.errorMessage">{{ vm.errorMessage }}</div>
+
+    <form name="loginForm" novalidate ng-submit="vm.submit(loginForm)">
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" class="form-control"
+          ng-model="vm.credentials.email" required placeholder="you@example.com" />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div style="position:relative;">
+          <input ng-attr-type="{{ vm.showPassword ? 'text' : 'password' }}" id="password" name="password"
+            class="form-control" style="padding-right:42px;"
+            ng-model="vm.credentials.password" required placeholder="••••••••" />
+          <button type="button" ng-click="vm.togglePasswordVisibility()"
+            style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--c-ink-muted);">
+            <i class="bi" ng-class="vm.showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-accent btn-block" ng-disabled="vm.isSubmitting">
+        <span class="spinner" ng-if="vm.isSubmitting"></span>
+        <span ng-if="!vm.isSubmitting">Sign in</span>
+        <span ng-if="vm.isSubmitting">Signing in...</span>
+      </button>
+    </form>
+
+    <p class="text-muted" style="margin-top:22px; font-size:0.85rem; color:var(--c-ink-muted); text-align:center;">
+      New to ShopSphere? <a href="#!/register" style="color:var(--c-accent); font-weight:600;">Create an account</a>
+    </p>
+    <p class="text-muted" style="margin-top:10px; font-size:0.78rem; color:var(--c-ink-muted); text-align:center;">
+      Demo: <code>ananya.iyer@example.com</code> / <code>Password@123</code>
+    </p>
+  </div>
+</div>

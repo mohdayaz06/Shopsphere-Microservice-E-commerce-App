@@ -1,0 +1,94 @@
+<div class="container-app" style="padding-top:28px; padding-bottom:48px; max-width:800px;">
+  <div class="section-header" style="padding:0; max-width:none;">
+    <div>
+      <span class="eyebrow">Your account</span>
+      <h2>Profile</h2>
+    </div>
+  </div>
+
+  <div class="card card-pad" style="margin-bottom:20px;" ng-if="!vm.isLoading">
+    <h3 style="font-size:0.92rem; margin-top:0;">Personal Information</h3>
+
+    <div class="alert alert-success" ng-if="vm.profileMessage">{{ vm.profileMessage }}</div>
+    <div class="alert alert-danger" ng-if="vm.profileError">{{ vm.profileError }}</div>
+
+    <form name="profileForm" novalidate ng-submit="vm.saveProfile(profileForm)">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full name</label>
+          <input type="text" class="form-control" ng-model="vm.profile.fullName" name="fullName" required maxlength="120" />
+        </div>
+        <div class="form-group">
+          <label>Email address</label>
+          <input type="email" class="form-control" ng-model="vm.profile.email" disabled />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" class="form-control" ng-model="vm.profile.phone" name="phone" placeholder="+91 98765 43210" />
+      </div>
+      <button type="submit" class="btn btn-accent" ng-disabled="vm.isSavingProfile">
+        <span class="spinner" ng-if="vm.isSavingProfile"></span>
+        <span ng-if="!vm.isSavingProfile">Save changes</span>
+      </button>
+    </form>
+  </div>
+
+  <div class="card card-pad">
+    <h3 style="font-size:0.92rem; margin-top:0;">Saved Addresses</h3>
+
+    <div class="empty-state" style="padding:24px;" ng-if="vm.addresses.length === 0">
+      <i class="bi bi-geo-alt"></i>
+      No saved addresses yet.
+    </div>
+
+    <div class="order-row" ng-repeat="addr in vm.addresses">
+      <div>
+        <div style="font-weight:600; font-size:0.88rem;">{{ addr.label }} <span class="badge badge-neutral" ng-if="addr.is_default">Default</span></div>
+        <div class="order-meta">{{ addr.line1 }}<span ng-if="addr.line2">, {{ addr.line2 }}</span>, {{ addr.city }}, {{ addr.state }} {{ addr.postal_code }}</div>
+      </div>
+      <button class="btn btn-outline btn-sm" ng-click="vm.deleteAddress(addr)"><i class="bi bi-trash"></i></button>
+    </div>
+
+    <form name="addressForm" novalidate ng-submit="vm.addAddress(addressForm)" style="margin-top:20px; padding-top:20px; border-top:1px solid var(--c-border);">
+      <h4 style="font-size:0.85rem; margin-bottom:14px;">Add a new address</h4>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Label</label>
+          <input type="text" class="form-control" ng-model="vm.newAddress.label" placeholder="Home, Office..." />
+        </div>
+        <div class="form-group" style="flex:0 0 auto; display:flex; align-items:flex-end; padding-bottom:10px;">
+          <label style="display:flex; align-items:center; gap:6px; margin-bottom:0; font-weight:500; font-size:0.85rem;">
+            <input type="checkbox" ng-model="vm.newAddress.isDefault" /> Set as default
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Address line 1</label>
+        <input type="text" class="form-control" ng-model="vm.newAddress.line1" name="line1" required maxlength="150" />
+      </div>
+      <div class="form-group">
+        <label>Address line 2 (optional)</label>
+        <input type="text" class="form-control" ng-model="vm.newAddress.line2" maxlength="150" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>City</label>
+          <input type="text" class="form-control" ng-model="vm.newAddress.city" name="city" required maxlength="80" />
+        </div>
+        <div class="form-group">
+          <label>State</label>
+          <input type="text" class="form-control" ng-model="vm.newAddress.state" name="state" required maxlength="80" />
+        </div>
+        <div class="form-group">
+          <label>Postal code</label>
+          <input type="text" class="form-control" ng-model="vm.newAddress.postalCode" name="postalCode" required maxlength="20" />
+        </div>
+      </div>
+      <button type="submit" class="btn btn-outline btn-sm" ng-disabled="vm.isAddingAddress">
+        <span class="spinner spinner-dark" ng-if="vm.isAddingAddress"></span>
+        <span ng-if="!vm.isAddingAddress"><i class="bi bi-plus-lg"></i> Add Address</span>
+      </button>
+    </form>
+  </div>
+</div>
