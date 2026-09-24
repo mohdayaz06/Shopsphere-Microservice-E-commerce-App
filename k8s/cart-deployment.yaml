@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart-service
+  namespace: shopsphere
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart-service
+  template:
+    metadata:
+      labels:
+        app: cart-service
+    spec:
+      containers:
+        - name: cart-service
+          image: mohdayazz/shopsphere-cart-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5003
+          env:
+            - name: PORT
+              value: "5003"
+            - name: NODE_ENV
+              value: "production"
+            - name: DB_HOST
+              value: "mysql"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASSWORD
+              value: "test123"
+            - name: DB_NAME
+              value: "shopsphere"
+            - name: JWT_SECRET
+              value: "shopsphere-super-secret-key-change-later"
+            - name: JWT_EXPIRES_IN
+              value: "1d"
+            - name: PRODUCT_SERVICE_URL
+              value: "http://product-service:5002"

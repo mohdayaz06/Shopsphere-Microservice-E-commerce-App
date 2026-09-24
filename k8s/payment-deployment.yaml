@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: shopsphere
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+        - name: payment-service
+          image: mohdayazz/shopsphere-payment-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5005
+          env:
+            - name: PORT
+              value: "5005"
+            - name: NODE_ENV
+              value: "production"
+            - name: DB_HOST
+              value: "mysql"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASSWORD
+              value: "test123"
+            - name: DB_NAME
+              value: "shopsphere"
+            - name: JWT_SECRET
+              value: "shopsphere-super-secret-key-change-later"
+            - name: JWT_EXPIRES_IN
+              value: "1d"

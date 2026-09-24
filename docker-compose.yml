@@ -1,0 +1,296 @@
+services:
+
+  # =========================
+  # MySQL Database
+  # =========================
+  mysql:
+    image: mysql:8.0
+    container_name: shopsphere-mysql
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: test123
+      MYSQL_DATABASE: shopsphere
+
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+
+    ports:
+      - "3306:3306"
+
+    networks:
+      - shopsphere-network
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ptest123"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+
+  # =========================
+  # User Service
+  # =========================
+  user-service:
+    build:
+      context: ./services/user-service
+    image: shopsphere-user-service:latest
+    container_name: shopsphere-user-service
+    restart: unless-stopped
+
+    environment:
+      NODE_ENV: development
+      PORT: 5001
+
+      DB_HOST: shopsphere-mysql
+      DB_PORT: 3306
+      DB_NAME: shopsphere
+      DB_USER: root
+      DB_PASSWORD: test123
+
+      JWT_SECRET: shopsphere-super-secret-key-change-later
+      JWT_EXPIRES_IN: 1d
+
+    ports:
+      - "5001:5001"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    networks:
+      - shopsphere-network
+
+
+  # =========================
+  # Product Service
+  # =========================
+  product-service:
+    build:
+      context: ./services/product-service
+    image: shopsphere-product-service:latest
+    container_name: shopsphere-product-service
+    restart: unless-stopped
+
+    environment:
+      NODE_ENV: development
+      PORT: 5002
+
+      DB_HOST: shopsphere-mysql
+      DB_PORT: 3306
+      DB_NAME: shopsphere
+      REDIS_URL: redis://shopsphere-redis:6379
+      DB_USER: root
+      DB_PASSWORD: test123
+
+    ports:
+      - "5002:5002"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    networks:
+      - shopsphere-network
+
+
+  # =========================
+  # Cart Service
+  # =========================
+  cart-service:
+    build:
+      context: ./services/cart-service
+    image: shopsphere-cart-service:latest
+    container_name: shopsphere-cart-service
+    restart: unless-stopped
+
+    environment:
+      NODE_ENV: development
+      PORT: 5003
+
+      DB_HOST: shopsphere-mysql
+      DB_PORT: 3306
+      DB_NAME: shopsphere
+      DB_USER: root
+      DB_PASSWORD: test123
+
+      JWT_SECRET: shopsphere-super-secret-key-change-later
+      JWT_EXPIRES_IN: 1d
+
+      PRODUCT_SERVICE_URL: http://shopsphere-product-service:5002
+
+    ports:
+      - "5003:5003"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      product-service:
+        condition: service_started
+
+    networks:
+      - shopsphere-network
+
+
+  # =========================
+  # Payment Service
+  # =========================
+  payment-service:
+    build:
+      context: ./services/payment-service
+    image: shopsphere-payment-service:latest
+    container_name: shopsphere-payment-service
+    restart: unless-stopped
+
+    environment:
+      NODE_ENV: development
+      PORT: 5005
+
+      DB_HOST: shopsphere-mysql
+      DB_PORT: 3306
+      DB_NAME: shopsphere
+      DB_USER: root
+      DB_PASSWORD: test123
+
+      JWT_SECRET: shopsphere-super-secret-key-change-later
+      JWT_EXPIRES_IN: 1d
+
+    ports:
+      - "5005:5005"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    networks:
+      - shopsphere-network
+
+
+  # =========================
+  # Order Service
+  # =========================
+  order-service:
+    build:
+      context: ./services/order-service
+    image: shopsphere-order-service:latest
+    container_name: shopsphere-order-service
+    restart: unless-stopped
+
+    environment:
+      NODE_ENV: development
+      PORT: 5004
+
+      DB_HOST: shopsphere-mysql
+      DB_PORT: 3306
+      DB_NAME: shopsphere
+      DB_USER: root
+      DB_PASSWORD: test123
+
+      JWT_SECRET: shopsphere-super-secret-key-change-later
+      JWT_EXPIRES_IN: 1d
+
+      CART_SERVICE_URL: http://shopsphere-cart-service:5003
+      PRODUCT_SERVICE_URL: http://shopsphere-product-service:5002
+      PAYMENT_SERVICE_URL: http://shopsphere-payment-service:5005
+
+    ports:
+      - "5004:5004"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      cart-service:
+        condition: service_started
+      product-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+
+    networks:
+      - shopsphere-network
+
+
+  # =========================
+  # API Gateway
+  # =========================
+  api-gateway:
+    build:
+      context: ./api-gateway
+    image: shopsphere-api-gateway:latest
+    container_name: shopsphere-api-gateway
+    restart: unless-stopped
+
+    environment:
+      NODE_ENV: development
+      PORT: 8000
+
+      USER_SERVICE_URL: http://shopsphere-user-service:5001
+      PRODUCT_SERVICE_URL: http://shopsphere-product-service:5002
+      CART_SERVICE_URL: http://shopsphere-cart-service:5003
+      ORDER_SERVICE_URL: http://shopsphere-order-service:5004
+      PAYMENT_SERVICE_URL: http://shopsphere-payment-service:5005
+
+    ports:
+      - "8000:8000"
+
+    depends_on:
+      user-service:
+        condition: service_started
+      product-service:
+        condition: service_started
+      cart-service:
+        condition: service_started
+      order-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+
+    networks:
+      - shopsphere-network
+
+
+  # =========================
+  # Frontend
+  # =========================
+  frontend:
+    build:
+      context: ./frontend
+    image: shopsphere-frontend:latest
+    container_name: shopsphere-frontend
+    restart: unless-stopped
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      api-gateway:
+        condition: service_started
+
+    networks:
+      - shopsphere-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: shopsphere-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - shopsphere-network 
+
+
+# =========================
+# Network
+# =========================
+networks:
+  shopsphere-network:
+    driver: bridge
+
+
+# =========================
+# Persistent MySQL Volume
+# =========================
+volumes:
+  mysql-data:

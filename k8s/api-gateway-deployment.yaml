@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: shopsphere
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: mohdayazz/shopsphere-api-gateway:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: PORT
+              value: "8000"
+            - name: NODE_ENV
+              value: "production"
+            - name: USER_SERVICE_URL
+              value: "http://user-service:5001"
+            - name: PRODUCT_SERVICE_URL
+              value: "http://product-service:5002"
+            - name: CART_SERVICE_URL
+              value: "http://cart-service:5003"
+            - name: ORDER_SERVICE_URL
+              value: "http://order-service:5004"
+            - name: PAYMENT_SERVICE_URL
+              value: "http://payment-service:5005"

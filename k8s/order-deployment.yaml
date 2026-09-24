@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: shopsphere
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: mohdayazz/shopsphere-order-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5004
+          env:
+            - name: PORT
+              value: "5004"
+            - name: NODE_ENV
+              value: "production"
+            - name: DB_HOST
+              value: "mysql"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASSWORD
+              value: "test123"
+            - name: DB_NAME
+              value: "shopsphere"
+            - name: JWT_SECRET
+              value: "shopsphere-super-secret-key-change-later"
+            - name: JWT_EXPIRES_IN
+              value: "1d"
+            - name: CART_SERVICE_URL
+              value: "http://cart-service:5003"
+            - name: PRODUCT_SERVICE_URL
+              value: "http://product-service:5002"
+            - name: PAYMENT_SERVICE_URL
+              value: "http://payment-service:5005"

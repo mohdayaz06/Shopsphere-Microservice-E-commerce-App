@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: shopsphere
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "test123"
+            - name: MYSQL_DATABASE
+              value: "shopsphere"
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+            - name: mysql-schema
+              mountPath: /docker-entrypoint-initdb.d/schema.sql
+              subPath: schema.sql
+            - name: mysql-seed
+              mountPath: /docker-entrypoint-initdb.d/seed.sql
+              subPath: seed.sql
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "mysqladmin ping -h 127.0.0.1 -uroot -ptest123 --silent"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+      volumes:
+        - name: mysql-data
+          emptyDir: {}
+        - name: mysql-schema
+          configMap:
+            name: mysql-schema
+        - name: mysql-seed
+          configMap:
+            name: mysql-seed
