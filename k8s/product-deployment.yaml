@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: product-service
-          image: mohdayazz/shopsphere-product-service:latest
+          image: mohdayazz/shopsphere-product-service:IMAGE_TAG
           imagePullPolicy: Always
           ports:
             - containerPort: 5002
