@@ -8,7 +8,7 @@
      * API Gateway, which routes it to the right microservice - the
      * frontend never talks to user-service/product-service/etc directly.
      */
-    .constant('API_BASE_URL', 'http://16.4.54.7:8000/api')
+    .constant('API_BASE_URL', '/api')
     .config(routeConfig)
     .run(runBlock);
 
