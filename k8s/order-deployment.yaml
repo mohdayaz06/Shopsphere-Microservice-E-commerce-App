@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: mohdayazz/shopsphere-order-service:latest
+          image: mohdayazz/shopsphere-order-service:IMAGE_TAG
           imagePullPolicy: Always
           ports:
             - containerPort: 5004
