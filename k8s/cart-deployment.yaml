@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: cart-service
-          image: mohdayazz/shopsphere-cart-service:latest
+          image: mohdayazz/shopsphere-cart-service:IMAGE_TAG
           imagePullPolicy: Always
           ports:
             - containerPort: 5003
