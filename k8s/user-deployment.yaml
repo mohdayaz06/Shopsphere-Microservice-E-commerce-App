@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: mohdayazz/shopsphere-user-service:latest
+          image: mohdayazz/shopsphere-user-service:IMAGE_TAG
           imagePullPolicy: Always
           ports:
             - containerPort: 5001
