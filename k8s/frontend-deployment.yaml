@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: mohdayazz/shopsphere-frontend:latest
+          image: mohdayazz/shopsphere-frontend:IMAGE_TAG
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
