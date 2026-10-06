@@ -60,9 +60,6 @@ Developer
         Docker Registry
              │
              ▼
-          Argo CD
-             │
-             ▼
         Amazon EKS
              │
              ▼
