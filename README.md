@@ -242,10 +242,6 @@ ShopSphere-Microservice-E-commerce-App/
 │   ├── services.yaml
 │   └── ingress.yaml
 │
-├── terraform/
-│
-├── Jenkinsfile
-│
 └── README.md
 ```
 
