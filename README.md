@@ -214,37 +214,7 @@ addresses
 * Linux
 * Bash
 * Python
-
-## 📁 Repository Structure
-
-```text
-ShopSphere-Microservice-E-commerce-App/
-│
-├── frontend/
-│
-├── services/
-│   ├── api-gateway/
-│   ├── user-service/
-│   ├── product-service/
-│   ├── cart-service/
-│   ├── order-service/
-│   └── payment-service/
-│
-├── k8s/
-│   ├── api-gateway-deployment.yaml
-│   ├── user-deployment.yaml
-│   ├── product-deployment.yaml
-│   ├── cart-deployment.yaml
-│   ├── order-deployment.yaml
-│   ├── payment-deployment.yaml
-│   ├── frontend-deployment.yaml
-│   ├── mysql-deployment.yaml
-│   ├── services.yaml
-│   └── ingress.yaml
-│
-└── README.md
 ```
-
 ##  Key Learning Outcomes
 
 Through this project, I gained hands-on experience with:
